@@ -1,6 +1,6 @@
 <template>
   <div :class="[isActive ? 'active' : '', 'character']">
-    <p class="heading">
+    <p class="heading-2">
       {{ character.name }} -
       <input
         v-model="character.initiative"
@@ -52,13 +52,10 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
-.heading {
-  font-weight: 700;
-  font-size: 1.25rem;
-}
+$character-bg-color: $gray500;
 
 .character {
-  background-color: gray
+  background-color: $character-bg-color;
   color: #e2e8f0;
   width: 30rem;
   border-radius: 1rem;
@@ -71,7 +68,7 @@ export default Vue.extend({
 
 input {
   width: 2rem;
-  background-color: gray;
+  background-color: $character-bg-color;
 }
 
 button {
