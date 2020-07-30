@@ -5,6 +5,7 @@
       <CharacterForm />
     </div>
     <div class="column">
+      <DiceRoller />
       <Notes />
     </div>
   </section>
@@ -15,12 +16,13 @@ import Vue from 'vue';
 import { mapGetters } from 'vuex';
 
 import CharacterForm from '@/components/CharacterForm.vue';
+import DiceRoller from '@/components/DiceRoller.vue';
 import Notes from '@/components/Notes.vue';
 import Tracker from '@/components/Tracker.vue';
 
 export default Vue.extend({
   name: 'HelloWorld',
-  components: { CharacterForm, Notes, Tracker },
+  components: { CharacterForm, DiceRoller, Notes, Tracker },
   computed: mapGetters({ characters: 'charactersInitiativeSorted' }),
   data() {
     return {
