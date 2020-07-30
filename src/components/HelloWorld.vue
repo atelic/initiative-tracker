@@ -1,148 +1,100 @@
 <template>
   <div class="hello">
     <h1>Initiative Tracker</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br />
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener"
-        >vue-cli documentation</a
-      >.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel"
-          target="_blank"
-          rel="noopener"
-          >babel</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-typescript"
-          target="_blank"
-          rel="noopener"
-          >typescript</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router"
-          target="_blank"
-          rel="noopener"
-          >router</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex"
-          target="_blank"
-          rel="noopener"
-          >vuex</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint"
-          target="_blank"
-          rel="noopener"
-          >eslint</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-unit-jest"
-          target="_blank"
-          rel="noopener"
-          >unit-jest</a
-        >
-      </li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li>
-        <a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a>
-      </li>
-      <li>
-        <a href="https://forum.vuejs.org" target="_blank" rel="noopener"
-          >Forum</a
-        >
-      </li>
-      <li>
-        <a href="https://chat.vuejs.org" target="_blank" rel="noopener"
-          >Community Chat</a
-        >
-      </li>
-      <li>
-        <a href="https://twitter.com/vuejs" target="_blank" rel="noopener"
-          >Twitter</a
-        >
-      </li>
-      <li>
-        <a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a>
-      </li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li>
-        <a href="https://router.vuejs.org" target="_blank" rel="noopener"
-          >vue-router</a
-        >
-      </li>
-      <li>
-        <a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-devtools#vue-devtools"
-          target="_blank"
-          rel="noopener"
-          >vue-devtools</a
-        >
-      </li>
-      <li>
-        <a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener"
-          >vue-loader</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-          rel="noopener"
-          >awesome-vue</a
-        >
-      </li>
-    </ul>
+    <div class="character-list">
+      <Character
+        v-for="(character, idx) in characters"
+        :key="`character-${idx}`"
+        :character="character"
+        :isActive="idx === activeIndex"
+      />
+    </div>
+    <button class="nextButton" @click.prevent="nextTurn">Next Turn</button>
+    <div class="characterForm">
+      <input
+        type="text"
+        placeholder="Name"
+        v-model="characterName"
+        @keyup.enter="addCharacter"
+      />
+      <button :disabled="!characterName" @click.prevent="addCharacter">
+        Add
+      </button>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import { mapGetters } from 'vuex';
+
+import Character from '@/components/Character.vue';
 
 export default Vue.extend({
   name: 'HelloWorld',
+  components: { Character },
+  computed: mapGetters({ characters: 'charactersInitiativeSorted' }),
+  data() {
+    return {
+      characterName: '',
+      activeIndex: 0,
+    };
+  },
+  methods: {
+    addCharacter() {
+      console.log(`adding: ${this.characterName}`);
+      this.$store.dispatch('addCharacter', { name: this.characterName });
+      this.characterName = '';
+    },
+    nextTurn() {
+      const nextIndex =
+        this.activeIndex === this.characters.length - 1
+          ? 0
+          : this.activeIndex + 1;
+      this.activeIndex = nextIndex;
+    },
+  },
   props: {
     msg: String,
   },
 });
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-h3 {
-  margin: 40px 0 0;
+h1 {
+  font-weight: 700;
+  font-size: 1.75rem;
+  margin: 2rem 0;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+
+input {
+  border: 1px solid black;
+  border-radius: 5px;
+  margin-top: 2rem;
+  margin-right: 1rem;
+  width: 16rem;
+  height: 2rem;
+  padding: 1rem 0.25rem;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+
+button {
+  background-color: green;
+  color: white;
+  padding: 0.25rem;
+  width: 4rem;
+  border-radius: 0.5rem;
+
+  &.nextButton {
+    width: 6rem;
+    background-color: #ffdf00;
+    color: black;
+  }
 }
-a {
-  color: #42b983;
+
+.character-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 </style>
