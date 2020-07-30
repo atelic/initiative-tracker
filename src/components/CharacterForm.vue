@@ -63,6 +63,9 @@ export default Vue.extend({
       console.log(`adding: ${this.character.name}`);
       this.$store.dispatch('addCharacter', {
         ...this.character,
+        armorClass: Number(this.character.armorClass),
+        hp: Number(this.character.hp),
+        initiative: Number(this.character.initiative),
         id: this.characters.length + 1,
       });
       this.clearCharacter();

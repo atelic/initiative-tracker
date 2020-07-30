@@ -3,10 +3,13 @@ import { Character, RootState } from '@/store/models';
 export const getters = {
   charactersInitiativeSorted(state: RootState): Character[] {
     return state.characters.sort((a: Character, b: Character): number => {
-      if (a.initiative === b.initiative) {
+      const initA = Number(a.initiative);
+      const initB = Number(b.initiative);
+
+      if (initA === initB) {
         return 0;
       }
-      return a.initiative > b.initiative ? -1 : 1;
+      return initA > initB ? -1 : 1;
     });
   },
 };
