@@ -13,6 +13,7 @@ export default new Vuex.Store<RootState>({
   state: {
     characters: Array<Character>(),
     notes: '',
+    currentTurn: 0,
   },
   mutations,
   actions,

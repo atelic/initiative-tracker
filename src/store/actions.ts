@@ -13,4 +13,7 @@ export const actions = {
   setNotes({ commit }: AppActionContext, notes: string) {
     commit('setNotes', notes);
   },
+  setCurrentTurn({ commit }: AppActionContext, currentTurn: number) {
+    commit('setCurrentTurn', currentTurn);
+  },
 };

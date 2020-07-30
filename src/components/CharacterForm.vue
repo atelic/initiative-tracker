@@ -19,7 +19,7 @@
       <div class="row">
         <input id="hp" type="text" placeholder="HP" v-model="character.hp" />
         <input
-          id="hp"
+          id="initiative"
           type="text"
           placeholder="Initiative"
           v-model="character.initiative"

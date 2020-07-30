@@ -3,6 +3,7 @@ import { ActionContext } from 'vuex';
 export interface RootState {
   characters: Character[];
   notes: string;
+  currentTurn: number;
 }
 
 export type AppActionContext = ActionContext<RootState, RootState>;

@@ -6,7 +6,7 @@
         v-for="(character, idx) in characters"
         :key="`character-${idx}`"
         :character="character"
-        :isActive="idx === activeIndex"
+        :isActive="idx === currentTurn"
       />
     </div>
     <button
@@ -21,26 +21,25 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
+import { RootState } from '@/store/models';
 import Character from '@/components/Character.vue';
 
 export default Vue.extend({
   name: 'HelloWorld',
   components: { Character },
-  computed: mapGetters({ characters: 'charactersInitiativeSorted' }),
-  data() {
-    return {
-      activeIndex: 0,
-    };
+  computed: {
+    ...mapGetters({ characters: 'charactersInitiativeSorted' }),
+    ...mapState(['currentTurn']),
   },
   methods: {
-    nextTurn() {
+    nextTurn(): void {
       const nextIndex =
-        this.activeIndex === this.characters.length - 1
+        this.currentTurn === this.characters.length - 1
           ? 0
-          : this.activeIndex + 1;
-      this.activeIndex = nextIndex;
+          : this.currentTurn + 1;
+      this.$store.dispatch('setCurrentTurn', nextIndex);
     },
   },
 });
