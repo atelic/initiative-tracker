@@ -9,18 +9,14 @@
         :isActive="idx === activeIndex"
       />
     </div>
-    <button class="nextButton" @click.prevent="nextTurn">Next Turn</button>
-    <div class="characterForm">
-      <input
-        type="text"
-        placeholder="Name"
-        v-model="characterName"
-        @keyup.enter="addCharacter"
-      />
-      <button :disabled="!characterName" @click.prevent="addCharacter">
-        Add
-      </button>
-    </div>
+    <button
+      v-if="characters.length !== 0"
+      class="nextButton"
+      @click.prevent="nextTurn"
+    >
+      Next Turn
+    </button>
+    <CharacterForm />
   </div>
 </template>
 
@@ -29,10 +25,11 @@ import Vue from 'vue';
 import { mapGetters } from 'vuex';
 
 import Character from '@/components/Character.vue';
+import CharacterForm from '@/components/CharacterForm.vue';
 
 export default Vue.extend({
   name: 'HelloWorld',
-  components: { Character },
+  components: { Character, CharacterForm },
   computed: mapGetters({ characters: 'charactersInitiativeSorted' }),
   data() {
     return {
@@ -41,11 +38,6 @@ export default Vue.extend({
     };
   },
   methods: {
-    addCharacter() {
-      console.log(`adding: ${this.characterName}`);
-      this.$store.dispatch('addCharacter', { name: this.characterName });
-      this.characterName = '';
-    },
     nextTurn() {
       const nextIndex =
         this.activeIndex === this.characters.length - 1
@@ -65,16 +57,6 @@ h1 {
   font-weight: 700;
   font-size: 1.75rem;
   margin: 2rem 0;
-}
-
-input {
-  border: 1px solid black;
-  border-radius: 5px;
-  margin-top: 2rem;
-  margin-right: 1rem;
-  width: 16rem;
-  height: 2rem;
-  padding: 1rem 0.25rem;
 }
 
 button {

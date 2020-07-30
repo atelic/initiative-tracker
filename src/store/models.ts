@@ -7,6 +7,7 @@ export interface RootState {
 export type AppActionContext = ActionContext<RootState, RootState>;
 
 export interface Character {
+  id: number;
   name: string;
   armorClass?: number;
   hp?: number;
