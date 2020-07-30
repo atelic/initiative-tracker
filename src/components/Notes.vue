@@ -31,9 +31,8 @@ textarea {
   resize: none;
   width: 100vw;
   height: 100vw;
-  @media (min-width: $lg) {
+  @media (min-width: $md) {
     width: 40rem;
-    height: auto;
   }
   font-family: 'Courier New', Courier, monospace;
 }
