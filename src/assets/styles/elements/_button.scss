@@ -1,0 +1,33 @@
+button {
+  [data-whatinput='keyboard'] & {
+    &:focus {
+      outline: 2px solid $black;
+    }
+  }
+}
+
+.button {
+  background: $primary;
+  display: inline-block;
+  color: $white;
+  padding: 0.25rem;
+  width: 4rem;
+  border-radius: 0.5rem;
+
+  &.large {
+    padding: 1rem 2rem;
+  }
+  &.extra-large {
+    padding: 1rem 4rem;
+  }
+  &.secondary {
+    background: $secondary;
+  }
+
+  &[disabled],
+  &.-disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}

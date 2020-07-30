@@ -1,14 +1,21 @@
 <template>
   <section>
-    <h1>Roll Dice</h1>
+    <h1 class="my-2">Roll Dice</h1>
     <pre v-if="diceResult">{{ diceResult }}</pre>
     <input
       v-model="diceString"
       placeholder="e.g. 4d6"
       @keyup.enter="roll"
       @blur="clearIfEmpty"
+      class="rounded"
     />
-    <button :disabled="diceString === ''" @click.prevent="roll">Roll</button>
+    <button
+      class="button ml-1"
+      :disabled="diceString === ''"
+      @click.prevent="roll"
+    >
+      Roll
+    </button>
   </section>
 </template>
 
@@ -42,24 +49,17 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
-h1 {
-  font-weight: 700;
-  font-size: 1.75rem;
-  margin: 2rem 0;
-}
-
 input {
-  border: 1px solid black;
-  border-radius: 5px;
+  border: 1px solid $black;
   width: 10rem;
   padding: 0.5rem;
 }
-button {
-  background-color: green;
-  color: white;
+/* button {
+  background-color: $green;
+  color: $white;
   padding: 0.25rem;
   width: 4rem;
   border-radius: 0.5rem;
   margin-left: 1rem;
-}
+} */
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <form class="characterForm">
-      <h1>Add Character</h1>
+    <form class="mt-2 align-center">
+      <h2>Add Character</h2>
       <div class="row">
         <input
           id="name"
@@ -26,7 +26,11 @@
         />
       </div>
       <div class="row">
-        <button :disabled="!canSubmit" @click.prevent="addCharacter">
+        <button
+          class="button mt-2"
+          :disabled="!canSubmit"
+          @click.prevent="addCharacter"
+        >
           Add
         </button>
       </div>
@@ -77,43 +81,13 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
-h1 {
-  font-weight: 700;
-  font-size: 1.5rem;
-}
 input {
-  border: 1px solid black;
+  border: 1px solid $black;
   border-radius: 5px;
   margin-top: 1rem;
   margin-right: 1rem;
   width: 16rem;
   height: 2rem;
   padding: 1rem 0.25rem;
-}
-
-button {
-  background-color: green;
-  color: white;
-  padding: 0.25rem;
-  width: 4rem;
-  border-radius: 0.5rem;
-  margin-top: 2rem;
-}
-
-.characterForm {
-  margin-top: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.row {
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-
-.column {
-  display: flex;
-  flex-direction: column;
 }
 </style>

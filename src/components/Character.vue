@@ -56,13 +56,13 @@ $character-bg-color: $gray500;
 
 .character {
   background-color: $character-bg-color;
-  color: #e2e8f0;
+  color: $white;
   width: 30rem;
   border-radius: 1rem;
   margin: 0 0 1rem 0;
   padding: 0.5rem 0;
   &.active {
-    color: #ffdf00;
+    color: $secondary;
   }
 }
 
@@ -72,7 +72,7 @@ input {
 }
 
 button {
-  color: red;
+  color: $red;
   margin: 0.5rem 0;
 }
 </style>

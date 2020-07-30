@@ -1,7 +1,7 @@
 <template>
   <section>
-    <h1>Notes</h1>
-    <textarea v-model="noteText"></textarea>
+    <h1 class="mt-2">Notes</h1>
+    <textarea class="p-1 h-screen rounded-lg" v-model="noteText"></textarea>
   </section>
 </template>
 
@@ -26,19 +26,10 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
-h1 {
-  font-weight: 700;
-  font-size: 1.75rem;
-  margin: 2rem 0;
-}
-
 textarea {
-  border: 1px solid black;
-  border-radius: 10px;
+  border: 1px solid $black;
   resize: none;
-  height: 100vw;
   width: 40rem;
-  padding: 1rem;
   font-family: 'Courier New', Courier, monospace;
 }
 </style>
