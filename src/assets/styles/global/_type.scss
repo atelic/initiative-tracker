@@ -1,0 +1,39 @@
+// Creates standard typography class with additional desktop only class
+@mixin typography(
+  $selector,
+  $font-weight,
+  $font-size,
+  $line-height: 1em,
+  $letter-spacing: 0.25px
+) {
+  #{$selector} {
+    font-weight: $font-weight;
+    font-size: $font-size;
+    line-height: $line-height;
+    letter-spacing: $letter-spacing;
+  }
+  #{$selector}-desktop {
+    @media (min-width: $md) {
+      font-weight: $font-weight;
+      font-size: $font-size;
+      line-height: $line-height;
+      letter-spacing: $letter-spacing;
+    }
+  }
+}
+
+// Ordered by reverse priority
+@include typography('.link', 500, 0.875rem, 1rem, 0.078125rem);
+@include typography('.caption', null, 0.75rem, 1rem, 0.025rem);
+@include typography('.overline', 500, 0.625rem, 1rem, 0.09375rem);
+@include typography('.body-2', null, 0.875rem, 1.25rem, 0.015625rem);
+@include typography('.body-1', null, 1rem, 1.75rem, 0.03125rem);
+@include typography('.subtitle-2', 700, 0.875rem, 1.5rem, 0.00625rem);
+@include typography('.subtitle-1', null, 1rem, 1.5rem, 0.009375rem);
+@include typography('h3, .heading-3', null, 1.25rem, 1.875rem, 0.009375rem);
+@include typography('h2, .heading-2', null, 1.5rem, 1.75rem);
+@include typography('h1, .heading-1', 700, 2.125rem, 40px, 0.015625rem);
+
+html {
+  font-size: 16px;
+}

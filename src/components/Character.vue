@@ -58,7 +58,7 @@ export default Vue.extend({
 }
 
 .character {
-  background-color: gray;
+  background-color: gray
   color: #e2e8f0;
   width: 30rem;
   border-radius: 1rem;
