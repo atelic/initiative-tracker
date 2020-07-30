@@ -1,10 +1,10 @@
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-2">
-    <section>
+  <div class="grid grid-cols-1 lg:grid-cols-2">
+    <section class="w-screen md:w-auto">
       <Tracker />
       <CharacterForm />
     </section>
-    <section>
+    <section class="w-screen md:w-auto">
       <DiceRoller />
       <Notes />
     </section>

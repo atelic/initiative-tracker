@@ -57,9 +57,15 @@ $character-bg-color: $gray500;
 .character {
   background-color: $character-bg-color;
   color: $white;
-  width: 30rem;
+  width: 100vw;
+  margin: 0 1rem 1rem 1rem;
+
+  @media (min-width: $lg) {
+    width: 30rem;
+    margin: 0 0 1rem 0;
+  }
+
   border-radius: 1rem;
-  margin: 0 0 1rem 0;
   padding: 0.5rem 0;
   &.active {
     color: $secondary;
