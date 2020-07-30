@@ -2,6 +2,7 @@ import { ActionContext } from 'vuex';
 
 export interface RootState {
   characters: Character[];
+  notes: string;
 }
 
 export type AppActionContext = ActionContext<RootState, RootState>;

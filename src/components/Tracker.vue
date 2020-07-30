@@ -1,12 +1,21 @@
 <template>
-  <section class="home-page">
-    <div class="column m-1 w-half">
-      <Tracker />
-      <CharacterForm />
+  <section>
+    <h1>Initiative Tracker</h1>
+    <div class="character-list">
+      <Character
+        v-for="(character, idx) in characters"
+        :key="`character-${idx}`"
+        :character="character"
+        :isActive="idx === activeIndex"
+      />
     </div>
-    <div class="column">
-      <Notes />
-    </div>
+    <button
+      v-if="characters.length !== 0"
+      class="nextButton"
+      @click.prevent="nextTurn"
+    >
+      Next Turn
+    </button>
   </section>
 </template>
 
@@ -14,13 +23,11 @@
 import Vue from 'vue';
 import { mapGetters } from 'vuex';
 
-import CharacterForm from '@/components/CharacterForm.vue';
-import Notes from '@/components/Notes.vue';
-import Tracker from '@/components/Tracker.vue';
+import Character from '@/components/Character.vue';
 
 export default Vue.extend({
   name: 'HelloWorld',
-  components: { CharacterForm, Notes, Tracker },
+  components: { Character },
   computed: mapGetters({ characters: 'charactersInitiativeSorted' }),
   data() {
     return {
@@ -47,17 +54,11 @@ h1 {
 }
 
 button {
-  background-color: green;
-  color: white;
+  background-color: #ffdf00;
+  color: black;
   padding: 0.25rem;
-  width: 4rem;
+  width: 6rem;
   border-radius: 0.5rem;
-
-  &.nextButton {
-    width: 6rem;
-    background-color: #ffdf00;
-    color: black;
-  }
 }
 
 .character-list {
@@ -65,27 +66,5 @@ button {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.home-page {
-  display: flex;
-}
-
-.m-1 {
-  margin: 1rem;
-}
-
-.w-half {
-  width: 50%;
-}
-
-.row {
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-
-.column {
-  display: flex;
-  flex-direction: column;
 }
 </style>

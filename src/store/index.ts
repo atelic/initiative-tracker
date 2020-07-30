@@ -12,6 +12,7 @@ Vue.use(Vuex);
 export default new Vuex.Store<RootState>({
   state: {
     characters: Array<Character>(),
+    notes: '',
   },
   mutations,
   actions,

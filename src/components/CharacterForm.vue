@@ -60,7 +60,6 @@ export default Vue.extend({
   },
   methods: {
     addCharacter(): void {
-      console.log(`adding: ${this.character.name}`);
       this.$store.dispatch('addCharacter', {
         ...this.character,
         armorClass: Number(this.character.armorClass),
