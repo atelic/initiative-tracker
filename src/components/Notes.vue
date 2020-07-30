@@ -39,5 +39,6 @@ textarea {
   height: 100vw;
   width: 40rem;
   padding: 1rem;
+  font-family: 'Courier New', Courier, monospace;
 }
 </style>
