@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/charactercard.tsx","./src/components/characterform.tsx","./src/components/diceroller.tsx","./src/components/initiativetracker.tsx","./src/components/notes.tsx","./src/components/presetmanager.tsx","./src/context/encountercontext.tsx","./src/types/index.ts"],"version":"5.6.3"}
