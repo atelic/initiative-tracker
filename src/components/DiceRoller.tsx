@@ -1,10 +1,57 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { DiceRoller as Roller } from '@dice-roller/rpg-dice-roller'
 
 const roller = new Roller()
 
+interface DieResult {
+  value: number
+  modifiers: Set<string>
+}
+
+interface RollResultsGroup {
+  rolls: DieResult[]
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function formatRollResult(rollResult: any): ReactNode {
+  const parts: ReactNode[] = []
+  const rolls = rollResult.rolls as (string | number | RollResultsGroup)[]
+
+  rolls.forEach((roll, index) => {
+    if (typeof roll === 'string') {
+      // Operator like "+" or "-"
+      parts.push(<span key={index}>{roll}</span>)
+    } else if (typeof roll === 'number') {
+      // Static modifier
+      parts.push(<span key={index}>{roll}</span>)
+    } else if (roll && typeof roll === 'object' && 'rolls' in roll) {
+      // Dice roll results - check for .rolls property
+      const diceDisplay = roll.rolls.map((die: DieResult, dieIndex: number) => {
+        const isDropped = die.modifiers.has('drop')
+        return (
+          <span key={dieIndex}>
+            {dieIndex > 0 && ', '}
+            <span className={isDropped ? 'line-through text-ink-muted' : ''}>
+              {die.value}
+            </span>
+          </span>
+        )
+      })
+      parts.push(<span key={index}>[{diceDisplay}]</span>)
+    }
+  })
+
+  return (
+    <span>
+      {rollResult.notation}: {parts} = <strong>{rollResult.total}</strong>
+    </span>
+  )
+}
+
 const quickRolls = [
   { label: 'd20', notation: '1d20' },
+  { label: 'Adv', notation: '2d20kh1' },
+  { label: 'Dis', notation: '2d20kl1' },
   { label: 'd12', notation: '1d12' },
   { label: 'd10', notation: '1d10' },
   { label: 'd8', notation: '1d8' },
@@ -14,7 +61,7 @@ const quickRolls = [
 
 export function DiceRoller() {
   const [notation, setNotation] = useState('')
-  const [result, setResult] = useState<string | null>(null)
+  const [result, setResult] = useState<ReactNode | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const handleRoll = (diceNotation: string = notation) => {
@@ -26,7 +73,7 @@ export function DiceRoller() {
 
     try {
       const rollResult = roller.roll(diceNotation)
-      setResult(rollResult.toString())
+      setResult(formatRollResult(rollResult))
       setError(null)
     } catch {
       setError('Invalid dice notation')
@@ -89,7 +136,7 @@ export function DiceRoller() {
           {error ? (
             <p className="text-combat-damage text-sm">{error}</p>
           ) : (
-            <pre className="dice-result whitespace-pre-wrap break-all">{result}</pre>
+            <div className="dice-result whitespace-pre-wrap break-all">{result}</div>
           )}
         </div>
       )}
