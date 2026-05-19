@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useEncounter } from '../context/EncounterContext'
 import type { EncounterPreset, PresetCharacter } from '../types'
+import { Icon } from './Icon'
 
 export function PresetManager() {
   const { state, dispatch, sortedCharacters } = useEncounter()
@@ -68,14 +69,23 @@ export function PresetManager() {
 
   return (
     <section className="card">
-      <h2 className="mb-4">Encounter Presets</h2>
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div>
+          <p className="section-kicker mb-1">Saved formations</p>
+          <h2>Encounter Presets</h2>
+        </div>
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-combat-damage/10 text-combat-damage">
+          <Icon name="save" className="h-4 w-4" />
+        </div>
+      </div>
 
-      <div className="flex gap-2 mb-4">
+      <div className="mb-3 flex gap-2">
         <button
           onClick={openSaveModal}
           disabled={sortedCharacters.length === 0}
           className="btn-secondary flex-1"
         >
+          <Icon name="save" className="h-4 w-4" />
           Save Current
         </button>
         <button
@@ -83,22 +93,22 @@ export function PresetManager() {
           disabled={state.presets.length === 0}
           className="btn-secondary flex-1"
         >
+          <Icon name="book" className="h-4 w-4" />
           Load Preset
         </button>
       </div>
 
-      {/* Quick access to recent presets */}
       {state.presets.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs text-ink-muted uppercase tracking-wider">Recent</p>
+          <p className="section-kicker">Recent</p>
           {state.presets.slice(-3).reverse().map(preset => (
             <button
               key={preset.id}
               onClick={() => handleLoadPreset(preset, 'replace')}
-              className="w-full text-left p-2 rounded bg-parchment-100 hover:bg-parchment-200 transition-colors"
+              className="w-full rounded-card border border-ink/10 bg-white/35 p-2 text-left text-sm transition-colors hover:bg-white/60"
             >
-              <span className="font-medium">{preset.name}</span>
-              <span className="text-xs text-ink-muted ml-2">
+              <span className="font-semibold">{preset.name}</span>
+              <span className="ml-2 font-mono text-xs text-ink-muted">
                 ({preset.characters.length} characters)
               </span>
             </button>
@@ -107,26 +117,26 @@ export function PresetManager() {
       )}
 
       {state.presets.length === 0 && (
-        <p className="text-sm text-ink-muted text-center py-4">
+        <p className="rounded-card border border-dashed border-ink/15 bg-white/25 px-3 py-3 text-center text-xs text-ink-muted">
           No saved presets yet. Add characters and save them as a preset for quick access.
         </p>
       )}
 
-      {/* Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 bg-ink/50 flex items-center justify-center p-4 z-50"
+          className="fixed inset-0 z-20 flex items-center justify-center bg-ink/50 p-4 backdrop-blur-sm"
           onClick={() => setIsModalOpen(false)}
         >
           <div
-            className="card max-w-md w-full max-h-[80vh] overflow-y-auto"
+            className="card max-h-[80vh] w-full max-w-md overflow-y-auto"
             onClick={e => e.stopPropagation()}
           >
             {modalMode === 'save' ? (
               <>
-                <h2 className="mb-4">Save Preset</h2>
+                <p className="section-kicker mb-1">Preset capture</p>
+                <h2 className="mb-3">Save Preset</h2>
 
-                <div className="mb-4">
+                <div className="mb-3">
                   <label htmlFor="presetName" className="label">
                     Preset Name
                   </label>
@@ -135,19 +145,19 @@ export function PresetManager() {
                     id="presetName"
                     value={presetName}
                     onChange={e => setPresetName(e.target.value)}
-                    placeholder="e.g., Goblin Ambush"
+                    placeholder="Crypt stairs, second watch"
                     className="input"
                     autoFocus
                   />
                 </div>
 
-                <div className="mb-4">
+                <div className="mb-3">
                   <p className="label">Characters to Include</p>
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                  <div className="max-h-48 space-y-1.5 overflow-y-auto">
                     {sortedCharacters.map(character => (
                       <label
                         key={character.id}
-                        className="flex items-center gap-2 p-2 rounded bg-parchment-100 hover:bg-parchment-200 cursor-pointer"
+                        className="flex cursor-pointer items-center gap-2 rounded-md bg-white/40 p-2 hover:bg-white/65"
                       >
                         <input
                           type="checkbox"
@@ -182,15 +192,15 @@ export function PresetManager() {
               </>
             ) : (
               <>
-                <h2 className="mb-4">Load Preset</h2>
+                <h2 className="mb-3">Load Preset</h2>
 
-                <div className="space-y-3 mb-4">
+                <div className="mb-3 space-y-2">
                   {state.presets.map(preset => (
                     <div
                       key={preset.id}
-                      className="p-3 rounded bg-parchment-100 border border-parchment-300"
+                      className="rounded-card border border-ink/10 bg-white/40 p-2.5"
                     >
-                      <div className="flex items-start justify-between mb-2">
+                      <div className="mb-2 flex items-start justify-between">
                         <div>
                           <h3 className="font-semibold">{preset.name}</h3>
                           <p className="text-xs text-ink-muted">
@@ -202,11 +212,11 @@ export function PresetManager() {
                           className="btn-ghost btn-sm text-combat-damage"
                           aria-label="Delete preset"
                         >
-                          ×
+                          <Icon name="trash" className="h-4 w-4" />
                         </button>
                       </div>
 
-                      <div className="text-xs text-ink-muted mb-3">
+                      <div className="mb-2 text-xs text-ink-muted">
                         {preset.characters.map(c => c.name).join(', ')}
                       </div>
 

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useEncounter } from '../context/EncounterContext'
+import { Icon } from './Icon'
 
 export function CharacterForm() {
   const { dispatch } = useEncounter()
@@ -42,10 +43,18 @@ export function CharacterForm() {
 
   return (
     <section className="card">
-      <h2 className="mb-4">Add Character</h2>
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div>
+          <p className="section-kicker mb-1">Roster intake</p>
+          <h2>Add Combatant</h2>
+        </div>
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-parchment-50">
+          <Icon name="plus" className="h-4 w-4" />
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
           {/* Name */}
           <div className="col-span-2 sm:col-span-1">
             <label htmlFor="name" className="label">
@@ -56,7 +65,7 @@ export function CharacterForm() {
               id="name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="Character name"
+              placeholder="Mara Vell, ash warden"
               className="input"
               required
             />
@@ -72,7 +81,7 @@ export function CharacterForm() {
               id="initiative"
               value={formData.initiative}
               onChange={(e) => setFormData({ ...formData, initiative: e.target.value })}
-              placeholder="Roll result"
+              placeholder="18"
               className="input"
               required
             />
@@ -88,7 +97,7 @@ export function CharacterForm() {
               id="armorClass"
               value={formData.armorClass}
               onChange={(e) => setFormData({ ...formData, armorClass: e.target.value })}
-              placeholder="AC"
+              placeholder="16"
               className="input"
             />
           </div>
@@ -103,32 +112,31 @@ export function CharacterForm() {
               id="hp"
               value={formData.hp}
               onChange={(e) => setFormData({ ...formData, hp: e.target.value })}
-              placeholder="HP"
+              placeholder="42"
               className="input"
             />
           </div>
         </div>
 
-        {/* NPC Toggle */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between rounded-card border border-ink/10 bg-white/35 px-2.5 py-1.5">
+          <label htmlFor="isNPC" className="text-xs font-medium text-ink">
+            Mark as NPC or monster
+          </label>
           <input
             type="checkbox"
             id="isNPC"
             checked={formData.isNPC}
             onChange={(e) => setFormData({ ...formData, isNPC: e.target.checked })}
-            className="w-4 h-4 rounded border-parchment-400 text-accent-gold focus:ring-accent-gold"
+            className="h-4 w-4 rounded border-ink/20 text-accent-gold focus:ring-accent-gold"
           />
-          <label htmlFor="isNPC" className="text-sm text-ink-muted">
-            This is an NPC/Monster
-          </label>
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           disabled={!canSubmit}
           className="btn-primary w-full"
         >
+          <Icon name="cross" className="h-4 w-4" />
           Add to Initiative
         </button>
       </form>

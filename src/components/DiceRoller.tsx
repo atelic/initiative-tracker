@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import { DiceRoller as Roller } from '@dice-roller/rpg-dice-roller'
+import { Icon } from './Icon'
 
 const roller = new Roller()
 
@@ -93,29 +94,35 @@ export function DiceRoller() {
 
   return (
     <section className="card">
-      <h2 className="mb-4">Dice Roller</h2>
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div>
+          <p className="section-kicker mb-1">Probability engine</p>
+          <h2>Dice Roller</h2>
+        </div>
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-gold/15 text-ink">
+          <Icon name="dice" className="h-4 w-4" />
+        </div>
+      </div>
 
-      {/* Quick Roll Buttons */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="mb-3 grid grid-cols-4 gap-1.5">
         {quickRolls.map(({ label, notation: n }) => (
           <button
             key={label}
             onClick={() => handleQuickRoll(n)}
-            className="btn-secondary btn-sm"
+            className="btn-secondary btn-sm font-mono"
           >
             {label}
           </button>
         ))}
       </div>
 
-      {/* Custom Roll Input */}
-      <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
+      <form onSubmit={handleSubmit} className="mb-3 flex gap-2">
         <input
           type="text"
           value={notation}
           onChange={(e) => setNotation(e.target.value)}
-          placeholder="e.g., 2d6+3, 4d6kh3"
-          className="input flex-1"
+          placeholder="2d6+3, 4d6kh3"
+          className="input flex-1 font-mono text-sm"
           aria-label="Dice notation"
         />
         <button
@@ -130,8 +137,8 @@ export function DiceRoller() {
       {/* Result Display */}
       {(result || error) && (
         <div className={`
-          p-3 rounded-lg
-          ${error ? 'bg-combat-damage/10 border border-combat-damage/30' : 'bg-parchment-200'}
+          rounded-card p-2
+          ${error ? 'bg-combat-damage/10 border border-combat-damage/30' : 'bg-white/45 border border-ink/10'}
         `}>
           {error ? (
             <p className="text-combat-damage text-sm">{error}</p>
@@ -141,8 +148,7 @@ export function DiceRoller() {
         </div>
       )}
 
-      {/* Help Text */}
-      <p className="mt-4 text-xs text-ink-muted">
+      <p className="mt-3 text-[11px] leading-5 text-ink-muted">
         Supports standard notation: <code className="bg-parchment-200 px-1 rounded">2d6</code>,{' '}
         <code className="bg-parchment-200 px-1 rounded">1d20+5</code>,{' '}
         <code className="bg-parchment-200 px-1 rounded">4d6kh3</code> (keep highest 3)

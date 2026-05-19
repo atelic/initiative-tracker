@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useEncounter } from '../context/EncounterContext'
+import { Icon } from './Icon'
 
 export function Notes() {
   const { state, dispatch } = useEncounter()
@@ -35,17 +36,25 @@ export function Notes() {
 
   return (
     <section className="card">
-      <h2 className="mb-4">Session Notes</h2>
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div>
+          <p className="section-kicker mb-1">Table memory</p>
+          <h2>Session Notes</h2>
+        </div>
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-combat-heal/10 text-combat-heal">
+          <Icon name="book" className="h-4 w-4" />
+        </div>
+      </div>
 
       <textarea
         value={localNotes}
         onChange={handleChange}
-        placeholder="Keep track of important details, enemy weaknesses, loot, or anything else..."
-        className="input min-h-[200px] resize-y font-mono text-sm"
+        placeholder="Enemy weaknesses, loot, bargains, grudges, names worth remembering..."
+        className="input min-h-[150px] resize-y font-mono text-xs leading-5"
         aria-label="Session notes"
       />
 
-      <p className="mt-2 text-xs text-ink-muted">
+      <p className="mt-1.5 font-mono text-[11px] text-ink-muted">
         Notes are automatically saved
       </p>
     </section>

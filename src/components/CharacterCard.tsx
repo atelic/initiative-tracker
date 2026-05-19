@@ -2,13 +2,15 @@ import { useState, useRef, useEffect } from 'react'
 import { useEncounter } from '../context/EncounterContext'
 import type { Character } from '../types'
 import { CONDITIONS } from '../types'
+import { Icon } from './Icon'
 
 interface CharacterCardProps {
   character: Character
   isActive: boolean
+  position: number
 }
 
-export function CharacterCard({ character, isActive }: CharacterCardProps) {
+export function CharacterCard({ character, isActive, position }: CharacterCardProps) {
   const { dispatch } = useEncounter()
   const [isEditing, setIsEditing] = useState(false)
   const [showConditions, setShowConditions] = useState(false)
@@ -146,35 +148,40 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
     return 'bg-combat-damage'
   }
 
+  const typeLabel = character.isNPC ? 'NPC' : 'PC'
+
   return (
     <div
       className={`
-        rounded-lg p-3 transition-all duration-200
+        group relative overflow-hidden rounded-card p-2.5 transition-all duration-300
         ${isActive
-          ? 'bg-accent-gold/20 border-2 border-accent-gold shadow-card-hover'
-          : 'bg-parchment-100/50 border border-parchment-300 hover:bg-parchment-100'}
-        ${character.isNPC ? 'border-l-4 border-l-accent-ruby' : ''}
+          ? 'border border-accent-gold/70 bg-accent-gold/15 shadow-card-hover'
+          : 'border border-ink/10 bg-white/40 hover:bg-white/55 hover:shadow-card'}
       `}
     >
-      <div className="flex items-start gap-3">
-        {/* Initiative Badge */}
-        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-parchment-200 border-2 border-parchment-400 flex items-center justify-center">
+      <div className={`absolute inset-y-0 left-0 w-1 ${character.isNPC ? 'bg-combat-damage' : 'bg-combat-heal'}`} />
+      {isActive && <div className="scanline absolute left-0 top-0 h-px w-full" />}
+
+      <div className="flex flex-col gap-2 pl-1 md:flex-row md:items-start md:gap-3">
+        <div className="flex flex-shrink-0 items-center gap-2 md:w-16 md:flex-col md:gap-1">
+          <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-muted">#{position}</span>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-ink/10 bg-parchment-50/80 shadow-inner-light">
           {isEditing ? (
             <input
               type="number"
               value={editValues.initiative}
               onChange={(e) => setEditValues({ ...editValues, initiative: Number(e.target.value) })}
               onKeyDown={handleKeyDown}
-              className="w-10 h-10 text-center text-lg font-display bg-transparent border-none focus:outline-none"
+              className="h-8 w-8 border-none bg-transparent text-center font-mono text-base font-semibold focus:outline-none"
             />
           ) : (
-            <span className="text-lg font-display font-semibold">{character.initiative}</span>
+            <span className="font-mono text-base font-semibold">{character.initiative}</span>
           )}
+          </div>
         </div>
 
-        {/* Character Info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="mb-1 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
             {isEditing ? (
               <input
                 ref={nameInputRef}
@@ -182,22 +189,25 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
                 value={editValues.name}
                 onChange={(e) => setEditValues({ ...editValues, name: e.target.value })}
                 onKeyDown={handleKeyDown}
-                className="input-inline text-base font-semibold flex-1"
+                className="input-inline min-w-40 flex-1 text-left text-sm font-semibold"
               />
             ) : (
-              <h3 className="font-semibold truncate">{character.name}</h3>
+              <h3 className="min-w-0 flex-1 truncate">{character.name}</h3>
             )}
+            <span className={`rounded-full px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] ${
+              character.isNPC ? 'bg-combat-damage/10 text-combat-damage' : 'bg-combat-heal/10 text-combat-heal'
+            }`}>
+              {typeLabel}
+            </span>
             {isActive && (
-              <span className="flex-shrink-0 text-xs font-display uppercase tracking-wider text-accent-gold">
+              <span className="flex-shrink-0 rounded-full bg-ink px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-parchment-50">
                 Active
               </span>
             )}
           </div>
 
-          {/* Stats Row */}
-          <div className="flex items-center gap-4 text-sm">
-            {/* AC */}
-            <div className="flex items-center gap-1">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+            <div className="flex items-center gap-1.5">
               <span className="stat-label">AC</span>
               {isEditing ? (
                 <input
@@ -205,16 +215,15 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
                   value={editValues.armorClass}
                   onChange={(e) => setEditValues({ ...editValues, armorClass: e.target.value })}
                   onKeyDown={handleKeyDown}
-                  placeholder="—"
+                  placeholder="-"
                   className="input-inline w-12"
                 />
               ) : (
-                <span className="font-semibold">{character.armorClass ?? '—'}</span>
+                <span className="font-mono font-semibold">{character.armorClass ?? '-'}</span>
               )}
             </div>
 
-            {/* HP */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               <span className="stat-label">HP</span>
               {isEditing ? (
                 <div className="flex items-center gap-1">
@@ -223,7 +232,7 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
                     value={editValues.hp}
                     onChange={(e) => setEditValues({ ...editValues, hp: e.target.value })}
                     onKeyDown={handleKeyDown}
-                    placeholder="—"
+                    placeholder="-"
                     className="input-inline w-12"
                   />
                   <span className="text-ink-muted">/</span>
@@ -237,8 +246,8 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
                   />
                 </div>
               ) : (
-                <span className="font-semibold">
-                  {character.hp !== undefined ? character.hp : '—'}
+                <span className="font-mono font-semibold">
+                  {character.hp !== undefined ? character.hp : '-'}
                   {character.maxHp !== undefined && `/${character.maxHp}`}
                 </span>
               )}
@@ -247,7 +256,7 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
 
           {/* HP Bar */}
           {!isEditing && hpPercentage !== null && (
-            <div className="mt-2 h-1.5 bg-parchment-300 rounded-full overflow-hidden">
+            <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-ink/10">
               <div
                 className={`h-full transition-all duration-300 ${getHpColor()}`}
                 style={{ width: `${hpPercentage}%` }}
@@ -257,33 +266,33 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
 
           {/* Concentration Badge */}
           {!isEditing && character.concentration && (
-            <div className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500/20 text-blue-800 rounded text-xs font-medium">
-              <span className="opacity-70">⟡</span>
+            <div className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-combat-heal/10 px-2 py-0.5 text-[11px] font-medium text-combat-heal">
+              <Icon name="spark" className="h-3 w-3" />
               {character.concentration}
               <button
                 onClick={clearConcentration}
                 className="ml-1 hover:text-combat-damage"
                 aria-label="Drop concentration"
               >
-                ×
+                <Icon name="x" className="h-3 w-3" />
               </button>
             </div>
           )}
 
           {/* Concentration Save Alert */}
           {conSaveAlert !== null && (
-            <div className="mt-2 p-2 bg-accent-gold/20 border border-accent-gold rounded text-sm animate-pulse">
+            <div className="mt-1.5 rounded-md border border-accent-gold/45 bg-accent-gold/15 p-1.5 text-xs animate-pulse">
               <strong>Concentration Check!</strong> DC {conSaveAlert} Constitution save
             </div>
           )}
 
           {/* Condition Badges */}
           {!isEditing && conditions.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-1">
+            <div className="mt-1.5 flex flex-wrap gap-1">
               {conditions.map(condition => (
                 <span
                   key={condition}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-combat-damage/20 text-combat-damage rounded text-xs font-medium"
+                  className="inline-flex items-center gap-1 rounded-full bg-combat-damage/10 px-1.5 py-0.5 text-[11px] font-medium text-combat-damage"
                 >
                   {condition}
                   <button
@@ -291,7 +300,7 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
                     className="hover:text-ink"
                     aria-label={`Remove ${condition}`}
                   >
-                    ×
+                    <Icon name="x" className="h-3 w-3" />
                   </button>
                 </span>
               ))}
@@ -300,8 +309,8 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
 
           {/* Death Saves */}
           {!isEditing && isDown && (
-            <div className="mt-3 p-2 bg-ink/5 rounded-lg border border-combat-damage/30">
-              <div className="text-xs font-display uppercase tracking-wider text-combat-damage mb-2">
+            <div className="mt-2 rounded-md border border-combat-damage/25 bg-combat-damage/10 p-2">
+              <div className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-combat-damage">
                 Death Saves
               </div>
               <div className="flex items-center gap-4">
@@ -312,7 +321,7 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
                     <button
                       key={`success-${i}`}
                       onClick={() => handleDeathSave('successes', i < deathSaves.successes ? -1 : 1)}
-                      className={`w-5 h-5 rounded-full border-2 transition-colors ${
+                    className={`h-4 w-4 rounded-full border transition-colors ${
                         i < deathSaves.successes
                           ? 'bg-combat-heal border-combat-heal'
                           : 'bg-transparent border-parchment-400 hover:border-combat-heal'
@@ -328,7 +337,7 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
                     <button
                       key={`failure-${i}`}
                       onClick={() => handleDeathSave('failures', i < deathSaves.failures ? -1 : 1)}
-                      className={`w-5 h-5 rounded-full border-2 transition-colors ${
+                    className={`h-4 w-4 rounded-full border transition-colors ${
                         i < deathSaves.failures
                           ? 'bg-combat-damage border-combat-damage'
                           : 'bg-transparent border-parchment-400 hover:border-combat-damage'
@@ -349,12 +358,13 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
 
           {/* Notes (expandable) */}
           {!isEditing && character.notes && !showNotes && (
-            <div className="mt-2 flex items-center gap-2">
+            <div className="mt-1.5 flex items-center gap-2">
               <button
                 onClick={() => setShowNotes(true)}
-                className="text-xs text-ink-muted hover:text-ink flex items-center gap-1"
+                className="flex items-center gap-1 text-xs text-ink-muted hover:text-ink"
               >
-                <span>📝</span> View notes
+                <Icon name="note" className="h-3.5 w-3.5" />
+                View notes
               </button>
               <button
                 onClick={() => dispatch({
@@ -364,14 +374,14 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
                 className="text-xs text-ink-muted hover:text-combat-damage"
                 aria-label="Clear notes"
               >
-                ×
+                <Icon name="x" className="h-3.5 w-3.5" />
               </button>
             </div>
           )}
           {!isEditing && showNotes && (
-            <div className="mt-2 p-2 bg-parchment-200/50 rounded text-sm">
+            <div className="mt-1.5 rounded-md border border-ink/10 bg-parchment-50/55 p-2 text-xs">
               <div className="flex justify-between items-start mb-1">
-                <span className="text-xs font-display uppercase tracking-wider text-ink-muted">Notes</span>
+                <span className="section-kicker">Notes</span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => dispatch({
@@ -393,7 +403,7 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
         </div>
 
         {/* Actions */}
-        <div className="flex-shrink-0 flex flex-col items-end gap-2">
+        <div className="flex-shrink-0 md:flex md:flex-col md:items-end md:gap-1.5">
           {isEditing ? (
             <div className="flex items-center gap-1">
               <button
@@ -401,6 +411,7 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
                 className="btn-primary btn-sm"
                 aria-label="Save changes"
               >
+                <Icon name="save" className="h-4 w-4" />
                 Save
               </button>
               <button
@@ -423,12 +434,12 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
                     onChange={(e) => setHpInput(e.target.value)}
                     onKeyDown={handleHpKeyDown}
                     placeholder="HP"
-                    className="w-14 px-2 py-1 text-center text-sm rounded border border-parchment-400 bg-parchment-50"
+                    className="w-12 rounded-md border border-ink/10 bg-parchment-50/80 px-1.5 py-1 text-center font-mono text-xs outline-none focus:border-accent-gold/70 focus:ring-2 focus:ring-accent-gold/30"
                   />
                   <button
                     onClick={() => applyHpChange(true)}
                     disabled={!hpInput}
-                    className="px-2 py-1 text-xs font-display uppercase bg-combat-damage/20 text-combat-damage rounded hover:bg-combat-damage hover:text-white disabled:opacity-50 transition-colors"
+                    className="rounded-md bg-combat-damage/10 px-1.5 py-1 font-mono text-[10px] font-semibold uppercase text-combat-damage transition-colors hover:bg-combat-damage hover:text-white disabled:opacity-50"
                     aria-label="Apply damage"
                   >
                     Dmg
@@ -436,7 +447,7 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
                   <button
                     onClick={() => applyHpChange(false)}
                     disabled={!hpInput}
-                    className="px-2 py-1 text-xs font-display uppercase bg-combat-heal/20 text-combat-heal rounded hover:bg-combat-heal hover:text-white disabled:opacity-50 transition-colors"
+                    className="rounded-md bg-combat-heal/10 px-1.5 py-1 font-mono text-[10px] font-semibold uppercase text-combat-heal transition-colors hover:bg-combat-heal hover:text-white disabled:opacity-50"
                     aria-label="Apply healing"
                   >
                     Heal
@@ -445,51 +456,51 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
               )}
 
               {/* Action buttons */}
-              <div className="flex items-center gap-1">
+              <div className="mt-1 flex items-center gap-0.5 md:mt-0">
                 <button
                   onClick={() => setShowConditions(!showConditions)}
-                  className={`btn-ghost btn-sm ${conditions.length > 0 ? 'text-combat-damage' : ''}`}
+                  className={`btn-ghost btn-icon ${conditions.length > 0 ? 'text-combat-damage' : ''}`}
                   aria-label="Toggle conditions"
                   title="Conditions"
                 >
-                  ⚡
+                  <Icon name="bolt" className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => {
                     setShowConcentration(!showConcentration)
                     setConcentrationInput(character.concentration ?? '')
                   }}
-                  className={`btn-ghost btn-sm ${character.concentration ? 'text-blue-600' : ''}`}
+                  className={`btn-ghost btn-icon ${character.concentration ? 'text-combat-heal' : ''}`}
                   aria-label="Set concentration"
                   title="Concentration"
                 >
-                  ⟡
+                  <Icon name="spark" className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => {
                     setEditingNotes(!editingNotes)
                     setNotesInput(character.notes ?? '')
                   }}
-                  className={`btn-ghost btn-sm ${character.notes ? 'text-ink' : ''}`}
+                  className={`btn-ghost btn-icon ${character.notes ? 'text-ink' : ''}`}
                   aria-label="Edit notes"
                   title="Notes"
                 >
-                  📝
+                  <Icon name="note" className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="btn-ghost btn-sm"
+                  className="btn-ghost btn-icon"
                   aria-label="Edit character"
                   title="Edit"
                 >
-                  ✎
+                  <Icon name="edit" className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={handleRemove}
-                  className="w-8 h-8 flex items-center justify-center rounded-full text-lg font-bold text-combat-damage hover:bg-combat-damage hover:text-white transition-colors"
+                  className="flex h-7 w-7 items-center justify-center rounded-full text-combat-damage transition-colors hover:bg-combat-damage hover:text-white"
                   aria-label="Remove character"
                 >
-                  ×
+                  <Icon name="x" className="h-3.5 w-3.5" />
                 </button>
               </div>
             </>
@@ -499,9 +510,9 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
 
       {/* Condition Picker */}
       {showConditions && !isEditing && (
-        <div className="mt-3 p-3 bg-parchment-200/50 rounded-lg border border-parchment-300">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-display uppercase tracking-wider text-ink-muted">Conditions</span>
+        <div className="mt-2 rounded-card border border-ink/10 bg-parchment-50/55 p-2">
+          <div className="mb-1.5 flex items-center justify-between">
+            <span className="section-kicker">Conditions</span>
             <button onClick={() => setShowConditions(false)} className="text-xs text-ink-muted hover:text-ink">
               Close
             </button>
@@ -511,10 +522,10 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
               <button
                 key={condition}
                 onClick={() => toggleCondition(condition)}
-                className={`px-2 py-1 text-xs rounded transition-colors ${
+                className={`rounded-full px-2.5 py-1 text-xs transition-colors ${
                   conditions.includes(condition)
                     ? 'bg-combat-damage text-white'
-                    : 'bg-parchment-100 hover:bg-parchment-300'
+                    : 'bg-white/55 hover:bg-parchment-200'
                 }`}
               >
                 {condition}
@@ -526,9 +537,9 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
 
       {/* Concentration Input */}
       {showConcentration && !isEditing && (
-        <div className="mt-3 p-3 bg-blue-500/10 rounded-lg border border-blue-500/30">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-display uppercase tracking-wider text-blue-800">Concentration</span>
+        <div className="mt-2 rounded-card border border-combat-heal/25 bg-combat-heal/10 p-2">
+          <div className="mb-1.5 flex items-center justify-between">
+            <span className="section-kicker text-combat-heal">Concentration</span>
             <button onClick={() => setShowConcentration(false)} className="text-xs text-ink-muted hover:text-ink">
               Close
             </button>
@@ -550,7 +561,7 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
                 }
               }}
               placeholder="Spell name..."
-              className="flex-1 px-2 py-1 text-sm rounded border border-parchment-400 bg-parchment-50"
+              className="input flex-1 py-1.5 text-sm"
               autoFocus
             />
             <button
@@ -585,9 +596,9 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
 
       {/* Notes Input */}
       {editingNotes && !isEditing && (
-        <div className="mt-3 p-3 bg-parchment-200/50 rounded-lg border border-parchment-300">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-display uppercase tracking-wider text-ink-muted">Notes</span>
+        <div className="mt-2 rounded-card border border-ink/10 bg-parchment-50/55 p-2">
+          <div className="mb-1.5 flex items-center justify-between">
+            <span className="section-kicker">Notes</span>
             <button onClick={() => setEditingNotes(false)} className="text-xs text-ink-muted hover:text-ink">
               Close
             </button>
@@ -602,7 +613,7 @@ export function CharacterCard({ character, isActive }: CharacterCardProps) {
             }}
             placeholder="Resistances, abilities, reminders..."
             rows={3}
-            className="w-full px-2 py-1 text-sm rounded border border-parchment-400 bg-parchment-50 resize-none"
+            className="input min-h-24 resize-none text-sm"
             autoFocus
           />
           <div className="flex justify-end gap-2 mt-2">
