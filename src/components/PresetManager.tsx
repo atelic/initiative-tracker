@@ -1,14 +1,20 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useEncounter } from '../context/EncounterContext'
 import type { EncounterPreset, PresetCharacter } from '../types'
 import { Icon } from './Icon'
 
 export function PresetManager() {
   const { state, dispatch, sortedCharacters } = useEncounter()
+  const dialogRef = useRef<HTMLDialogElement>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'save' | 'load'>('load')
   const [presetName, setPresetName] = useState('')
   const [selectedCharacters, setSelectedCharacters] = useState<Set<string>>(new Set())
+
+  useEffect(() => {
+    if (isModalOpen) dialogRef.current?.showModal()
+    else dialogRef.current?.close()
+  }, [isModalOpen])
 
   const openSaveModal = () => {
     setModalMode('save')
@@ -47,6 +53,7 @@ export function PresetManager() {
   }
 
   const handleLoadPreset = (preset: EncounterPreset, mode: 'replace' | 'add') => {
+    if (mode === 'replace' && state.characters.length > 0 && !window.confirm('Replace the current combatants with this preset?')) return
     dispatch({ type: 'LOAD_PRESET', payload: { preset, mode } })
     setIsModalOpen(false)
   }
@@ -69,12 +76,11 @@ export function PresetManager() {
 
   return (
     <section className="card">
-      <div className="mb-3 flex items-start justify-between gap-3">
+      <div className="mb-5 flex items-start justify-between gap-3 border-b border-brass-400/20 pb-4">
         <div>
-          <p className="section-kicker mb-1">Saved formations</p>
-          <h2>Encounter Presets</h2>
+          <h2>Saved Presets</h2>
         </div>
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-combat-damage/10 text-combat-damage">
+        <div className="flex h-9 w-9 items-center justify-center rounded border border-white/[0.1] text-brass-200">
           <Icon name="save" className="h-4 w-4" />
         </div>
       </div>
@@ -83,7 +89,7 @@ export function PresetManager() {
         <button
           onClick={openSaveModal}
           disabled={sortedCharacters.length === 0}
-          className="btn-secondary flex-1"
+          className="btn-secondary btn-sm flex-1"
         >
           <Icon name="save" className="h-4 w-4" />
           Save Current
@@ -91,7 +97,7 @@ export function PresetManager() {
         <button
           onClick={openLoadModal}
           disabled={state.presets.length === 0}
-          className="btn-secondary flex-1"
+          className="btn-secondary btn-sm flex-1"
         >
           <Icon name="book" className="h-4 w-4" />
           Load Preset
@@ -100,12 +106,11 @@ export function PresetManager() {
 
       {state.presets.length > 0 && (
         <div className="space-y-2">
-          <p className="section-kicker">Recent</p>
           {state.presets.slice(-3).reverse().map(preset => (
             <button
               key={preset.id}
               onClick={() => handleLoadPreset(preset, 'replace')}
-              className="w-full rounded-card border border-ink/10 bg-white/35 p-2 text-left text-sm transition-colors hover:bg-white/60"
+              className="w-full border border-brass-400/20 bg-white/[0.025] p-3 text-left text-sm transition-colors hover:border-brass-300/35 hover:bg-brass-500/10"
             >
               <span className="font-semibold">{preset.name}</span>
               <span className="ml-2 font-mono text-xs text-ink-muted">
@@ -117,23 +122,18 @@ export function PresetManager() {
       )}
 
       {state.presets.length === 0 && (
-        <p className="rounded-card border border-dashed border-ink/15 bg-white/25 px-3 py-3 text-center text-xs text-ink-muted">
+        <p className="border border-dashed border-brass-400/20 bg-white/[0.02] px-4 py-7 text-center text-xs leading-5 text-ink-muted">
           No saved presets yet. Add characters and save them as a preset for quick access.
         </p>
       )}
 
-      {isModalOpen && (
-        <div
-          className="fixed inset-0 z-20 flex items-center justify-center bg-ink/50 p-4 backdrop-blur-sm"
-          onClick={() => setIsModalOpen(false)}
-        >
+      <dialog ref={dialogRef} className="preset-dialog" aria-modal="true" aria-label={modalMode === 'save' ? 'Save preset' : 'Load preset'} onCancel={() => setIsModalOpen(false)} onClick={event => { if (event.target === event.currentTarget) setIsModalOpen(false) }}>
           <div
-            className="card max-h-[80vh] w-full max-w-md overflow-y-auto"
+            className="modal-panel max-h-[80vh] w-full max-w-md overflow-y-auto"
             onClick={e => e.stopPropagation()}
           >
             {modalMode === 'save' ? (
               <>
-                <p className="section-kicker mb-1">Preset capture</p>
                 <h2 className="mb-3">Save Preset</h2>
 
                 <div className="mb-3">
@@ -157,7 +157,7 @@ export function PresetManager() {
                     {sortedCharacters.map(character => (
                       <label
                         key={character.id}
-                        className="flex cursor-pointer items-center gap-2 rounded-md bg-white/40 p-2 hover:bg-white/65"
+                        className="flex cursor-pointer items-center gap-2 rounded-md bg-brass-500/5 p-2 hover:bg-brass-500/10"
                       >
                         <input
                           type="checkbox"
@@ -198,7 +198,7 @@ export function PresetManager() {
                   {state.presets.map(preset => (
                     <div
                       key={preset.id}
-                      className="rounded-card border border-ink/10 bg-white/40 p-2.5"
+                      className="rounded-card border border-ink/10 bg-brass-500/5 p-2.5"
                     >
                       <div className="mb-2 flex items-start justify-between">
                         <div>
@@ -247,8 +247,7 @@ export function PresetManager() {
               </>
             )}
           </div>
-        </div>
-      )}
+      </dialog>
     </section>
   )
 }

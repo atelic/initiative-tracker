@@ -74,4 +74,3 @@ export type EncounterAction =
   | { type: 'SAVE_PRESET'; payload: EncounterPreset }
   | { type: 'DELETE_PRESET'; payload: string }
   | { type: 'LOAD_PRESET'; payload: { preset: EncounterPreset; mode: 'replace' | 'add' } }
-  | { type: 'HYDRATE'; payload: EncounterState }

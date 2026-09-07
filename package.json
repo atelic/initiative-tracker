@@ -9,12 +9,14 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy": "vite build && gh-pages -d dist"
+    "deploy": "vite build && gh-pages -d dist",
+    "test": "node --experimental-strip-types tests/encounter.test.mjs"
   },
   "dependencies": {
+    "@dice-roller/rpg-dice-roller": "^5.5.1",
+    "@phosphor-icons/react": "^2.1.10",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "@dice-roller/rpg-dice-roller": "^5.5.1"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

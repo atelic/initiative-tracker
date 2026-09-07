@@ -1,22 +1,45 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useEncounter } from '../context/EncounterContext'
 import { Icon } from './Icon'
 
-export function CharacterForm() {
+interface CharacterFormProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+const initialForm = {
+  name: '',
+  initiative: '',
+  armorClass: '',
+  hp: '',
+  isNPC: false,
+}
+
+export function CharacterForm({ isOpen, onClose }: CharacterFormProps) {
   const { dispatch } = useEncounter()
-  const [formData, setFormData] = useState({
-    name: '',
-    initiative: '',
-    armorClass: '',
-    hp: '',
-    isNPC: false,
-  })
+  const dialogRef = useRef<HTMLDialogElement>(null)
+  const [formData, setFormData] = useState(initialForm)
+  const [error, setError] = useState('')
 
-  const canSubmit = formData.name.trim() !== '' && formData.initiative !== ''
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (isOpen) {
+      dialog?.showModal()
+      dialog?.querySelector<HTMLInputElement>('#name')?.focus()
+    }
+    else dialog?.close()
+  }, [isOpen])
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!canSubmit) return
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault()
+    if (!formData.name.trim()) {
+      setError('Enter a name for this combatant.')
+      return
+    }
+    if (formData.initiative === '') {
+      setError('Initiative is required to place them in the order.')
+      return
+    }
 
     dispatch({
       type: 'ADD_CHARACTER',
@@ -31,115 +54,71 @@ export function CharacterForm() {
       },
     })
 
-    // Reset form but keep isNPC toggle state for convenience
-    setFormData({
-      name: '',
-      initiative: '',
-      armorClass: '',
-      hp: '',
-      isNPC: formData.isNPC,
-    })
+    setFormData({ ...initialForm, isNPC: formData.isNPC })
+    setError('')
+    onClose()
   }
 
   return (
-    <section className="card">
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <div>
-          <p className="section-kicker mb-1">Roster intake</p>
-          <h2>Add Combatant</h2>
-        </div>
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-parchment-50">
-          <Icon name="plus" className="h-4 w-4" />
-        </div>
-      </div>
+    <dialog ref={dialogRef} onCancel={onClose} onClick={event => { if (event.target === event.currentTarget) onClose() }} className="summon-overlay" aria-modal="true" aria-labelledby="summon-title">
+      <section className="summon-drawer">
+            <div className="summon-heading">
+              <div>
+                <h2 id="summon-title" className="mt-2 text-3xl">Add combatant</h2>
+              </div>
+              <button type="button" onClick={onClose} className="icon-button" aria-label="Close add combatant panel">
+                <Icon name="x" className="h-5 w-5" />
+              </button>
+            </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <div className="grid grid-cols-2 gap-3">
-          {/* Name */}
-          <div className="col-span-2 sm:col-span-1">
-            <label htmlFor="name" className="label">
-              Name <span className="text-combat-damage">*</span>
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="Mara Vell, ash warden"
-              className="input"
-              required
-            />
-          </div>
+            <form onSubmit={handleSubmit} className="summon-form">
+              <div className="field-block">
+                <label htmlFor="name" className="label">Name <span>Required</span></label>
+                <input id="name" required value={formData.name} onChange={(event) => setFormData({ ...formData, name: event.target.value })} placeholder="Mara Vell, ash warden" className="input input-large" autoFocus />
+                <p className="field-helper">This name appears in the turn order.</p>
+              </div>
 
-          {/* Initiative */}
-          <div className="col-span-2 sm:col-span-1">
-            <label htmlFor="initiative" className="label">
-              Initiative <span className="text-combat-damage">*</span>
-            </label>
-            <input
-              type="number"
-              id="initiative"
-              value={formData.initiative}
-              onChange={(e) => setFormData({ ...formData, initiative: e.target.value })}
-              placeholder="18"
-              className="input"
-              required
-            />
-          </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="field-block">
+                  <label htmlFor="initiative" className="label">Initiative <span>Required</span></label>
+                  <input type="number" id="initiative" required value={formData.initiative} onChange={(event) => setFormData({ ...formData, initiative: event.target.value })} placeholder="18" className="input font-mono" />
+                </div>
+                <div className="field-block">
+                  <label htmlFor="armorClass" className="label">Armor class</label>
+                  <input type="number" id="armorClass" min="0" value={formData.armorClass} onChange={(event) => setFormData({ ...formData, armorClass: event.target.value })} placeholder="16" className="input font-mono" />
+                </div>
+              </div>
 
-          {/* Armor Class */}
-          <div>
-            <label htmlFor="armorClass" className="label">
-              Armor Class
-            </label>
-            <input
-              type="number"
-              id="armorClass"
-              value={formData.armorClass}
-              onChange={(e) => setFormData({ ...formData, armorClass: e.target.value })}
-              placeholder="16"
-              className="input"
-            />
-          </div>
+              <div className="field-block">
+                <label htmlFor="hp" className="label">Hit points</label>
+                <input type="number" id="hp" min="0" value={formData.hp} onChange={(event) => setFormData({ ...formData, hp: event.target.value })} placeholder="42" className="input font-mono" />
+                <p className="field-helper">Used as both current and maximum HP.</p>
+              </div>
 
-          {/* Hit Points */}
-          <div>
-            <label htmlFor="hp" className="label">
-              Hit Points
-            </label>
-            <input
-              type="number"
-              id="hp"
-              value={formData.hp}
-              onChange={(e) => setFormData({ ...formData, hp: e.target.value })}
-              placeholder="42"
-              className="input"
-            />
-          </div>
-        </div>
+              <fieldset>
+                <legend className="label">Side</legend>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="allegiance-option">
+                    <input type="radio" name="side" value="ally" checked={!formData.isNPC} onChange={() => setFormData({ ...formData, isNPC: false })} />
+                    <Icon name="shield" className="h-4 w-4 shrink-0" />
+                    Player / ally
+                  </label>
+                  <label className="allegiance-option">
+                    <input type="radio" name="side" value="hostile" checked={formData.isNPC} onChange={() => setFormData({ ...formData, isNPC: true })} />
+                    <Icon name="sword" className="h-4 w-4 shrink-0" />
+                    Hostile
+                  </label>
+                </div>
+              </fieldset>
 
-        <div className="flex items-center justify-between rounded-card border border-ink/10 bg-white/35 px-2.5 py-1.5">
-          <label htmlFor="isNPC" className="text-xs font-medium text-ink">
-            Mark as NPC or monster
-          </label>
-          <input
-            type="checkbox"
-            id="isNPC"
-            checked={formData.isNPC}
-            onChange={(e) => setFormData({ ...formData, isNPC: e.target.checked })}
-            className="h-4 w-4 rounded border-ink/20 text-accent-gold focus:ring-accent-gold"
-          />
-        </div>
+              {error ? <p className="form-error" role="alert">{error}</p> : null}
 
-        <button
-          type="submit"
-          disabled={!canSubmit}
-          className="btn-primary w-full"
-        >
-          <Icon name="cross" className="h-4 w-4" />
-          Add to Initiative
-        </button>
-      </form>
-    </section>
+              <div className="mt-auto grid grid-cols-2 gap-3 pt-6">
+                <button type="button" onClick={onClose} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary"><Icon name="plus" className="h-4 w-4" /> Add combatant</button>
+              </div>
+            </form>
+      </section>
+    </dialog>
   )
 }
